@@ -10,6 +10,7 @@
 	<!-- End Google Tag Manager -->
 
         <meta charset="UTF-8" />
+        <link rel="icon" type="image/png" href="favicon.png" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Jovana Anđelković - Portfolio</title>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,81 +22,332 @@
         <link rel="stylesheet" href="styles.css" />
     </head>
     <body>
+        <a href="#main-content" class="skip-link">Skip to main content</a>
+        <main id="main-content">
         <div class="container">
             <div class="left-section">
                 <h1 class="main-title">
                     I make things,<br />
-                    both digital <span class="italic">& analog</span>
+                    both digital<br /><span class="italic">& analog</span>
                 </h1>
 
                 <div class="name-title-section">
                     <h2 class="name">Jovana Anđelković</h2>
-                    <p class="job-title">Senior Product Designer @ Elastic</p>
+                    <p class="job-title">Senior Product Designer @ <a href="https://www.elastic.co/" target="_blank" rel="noopener noreferrer" aria-label="Elastic (opens in new tab)">Elastic</a></p>
                 </div>
 
-                <div class="profile-info">
-                    <div class="links">
-                        <a
-                            href="https://www.linkedin.com/in/andelkovic-jovana/"
-                            class="link"
-                            target="_blank"
-                            >LinkedIn</a
-                        >
-                        <span class="text-separator">|</span>
-                        <span class="link-description"
-                            >Happy to share some previous work on request</span
-                        >
+                <div class="info-columns">
+                    <div class="info-column">
+                        <span class="info-column-label">Previously</span>
+                        <ul class="info-column-list">
+                            <li><a href="https://www.getyourguide.com/" target="_blank" rel="noopener noreferrer">GetYourGuide</a></li>
+                            <li><a href="https://oscilar.com/" target="_blank" rel="noopener noreferrer">Oscilar</a></li>
+                            <li><a href="https://www.madetight.com/" target="_blank" rel="noopener noreferrer">Made Tight</a></li>
+                            <li><a href="https://tradecore.com/" target="_blank" rel="noopener noreferrer">TradeCore</a></li>
+                        </ul>
                     </div>
-
-                    <div class="links">
-                        <a
-                            href="https://github.com/jovana-andjelkovic"
-                            class="link"
-                            target="_blank"
-                            >Github</a
-                        >
-                        <span class="text-separator">|</span>
-                        <span class="link-description"
-                            ><em>vibes incoming ✨</em></span
-                        >
+                    <div class="info-column">
+                        <span class="info-column-label">Side projects</span>
+                        <ul class="info-column-list">
+                            <li><a href="https://github.com/jovana-andjelkovic/cardboard" target="_blank" rel="noopener noreferrer">CardBoard</a></li>
+                        </ul>
                     </div>
-                </div>
-
-                <div class="company-grid">
-                    <a
-                        href="https://www.elastic.co/"
-                        target="_blank"
-                        class="company-logo"
-                    >
-                        <img
-                            src="logos/elastic logo.png"
-                            alt="Elastic"
-                            class="elastic-logo"
-                        />
-                    </a>
-                    <a
-                        href="https://www.getyourguide.com/"
-                        target="_blank"
-                        class="company-logo"
-                    >
-                        <img
-                            src="logos/getyourguide logo.png"
-                            alt="GetYourGuide"
-                        />
-                    </a>
-                    <a
-                        href="https://oscilar.com/"
-                        target="_blank"
-                        class="company-logo"
-                    >
-                        <img
-                            src="logos/oscilar logo.png"
-                            alt="Oscilar"
-                            class="oscilar-logo"
-                        />
-                    </a>
+                    <div class="info-column">
+                        <span class="info-column-label">Find me @</span>
+                        <ul class="info-column-list">
+                            <li><a href="https://www.linkedin.com/in/andelkovic-jovana/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+                            <li><a href="https://github.com/jovana-andjelkovic" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
+        </main>
+
+    <script>
+      (function () {
+        var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+        // ── Grid config ───────────────────────────────────────
+        var cfg = {
+          tiltX:       0,
+          tiltY:       0,
+          rotZ:        90,
+          perspective: 800,
+          spacing:     20,
+          majorFreq:   4,
+          opacity:     0.4,
+          vignette:    1,
+        };
+
+        // ── Grid canvas ───────────────────────────────────────
+        // Direct fixed child of body — no overflow:hidden ancestor,
+        // so CSS 3D transforms work correctly.
+        var gridCanvas = document.createElement('canvas');
+        gridCanvas.style.cssText = 'position:fixed;pointer-events:none;z-index:0';
+        document.body.appendChild(gridCanvas);
+        var gctx = gridCanvas.getContext('2d');
+        var gW = 0, gH = 0;
+
+        function resizeGrid() {
+          var vw = window.innerWidth, vh = window.innerHeight;
+          gW = gridCanvas.width  = Math.ceil(vw * 1.8);
+          gH = gridCanvas.height = Math.ceil(vh * 1.8);
+          gridCanvas.style.width  = gW + 'px';
+          gridCanvas.style.height = gH + 'px';
+          gridCanvas.style.left   = Math.round((vw - gW) / 2) + 'px';
+          gridCanvas.style.top    = Math.round((vh - gH) / 2) + 'px';
+          // transform-origin at canvas center = viewport center
+          gridCanvas.style.transformOrigin = (gW / 2) + 'px ' + (gH / 2) + 'px';
+        }
+        resizeGrid();
+        window.addEventListener('resize', function () { resizeGrid(); applyTransform(); drawGrid(); });
+
+        function applyTransform() {
+          gridCanvas.style.transform =
+            'perspective(' + cfg.perspective + 'px) ' +
+            'rotateX(' + cfg.tiltX + 'deg) ' +
+            'rotateY(' + cfg.tiltY + 'deg) ' +
+            'rotateZ(' + cfg.rotZ  + 'deg)';
+        }
+        applyTransform();
+
+        function drawGrid() {
+          gctx.clearRect(0, 0, gW, gH);
+          var sp = cfg.spacing;
+          var op = cfg.opacity;
+          var cx = gW / 2, cy = gH / 2;
+
+          // Vertical lines — centered on canvas
+          var firstX = ((cx % sp) + sp) % sp;
+          for (var x = firstX - sp; x < gW + sp; x += sp) {
+            var ci = ((Math.round((x - cx) / sp) % cfg.majorFreq) + cfg.majorFreq) % cfg.majorFreq;
+            var mv = ci === 0;
+            gctx.beginPath();
+            gctx.moveTo(x, 0);
+            gctx.lineTo(x, gH);
+            gctx.strokeStyle = 'rgba(109,121,202,' + ((mv ? 0.35 : 0.13) * op).toFixed(3) + ')';
+            gctx.lineWidth   = mv ? 1.2 : 0.6;
+            gctx.stroke();
+          }
+
+          // Horizontal lines — centered on canvas
+          var firstY = ((cy % sp) + sp) % sp;
+          for (var y = firstY - sp; y < gH + sp; y += sp) {
+            var ri = ((Math.round((y - cy) / sp) % cfg.majorFreq) + cfg.majorFreq) % cfg.majorFreq;
+            var mh = ri === 0;
+            gctx.beginPath();
+            gctx.moveTo(0, y);
+            gctx.lineTo(gW, y);
+            gctx.strokeStyle = 'rgba(109,121,202,' + ((mh ? 0.35 : 0.13) * op).toFixed(3) + ')';
+            gctx.lineWidth   = mh ? 1.2 : 0.6;
+            gctx.stroke();
+          }
+
+          // Radial vignette
+          if (cfg.vignette > 0) {
+            var r  = Math.sqrt(cx * cx + cy * cy);
+            var vg = gctx.createRadialGradient(cx, cy, r * 0.25, cx, cy, r);
+            vg.addColorStop(0, 'rgba(0,0,0,0)');
+            vg.addColorStop(1, 'rgba(0,0,0,' + cfg.vignette + ')');
+            gctx.save();
+            gctx.globalCompositeOperation = 'destination-out';
+            gctx.fillStyle = vg;
+            gctx.fillRect(0, 0, gW, gH);
+            gctx.restore();
+          }
+        }
+        drawGrid();
+
+        // ── Film grain ────────────────────────────────────────
+        var scene = document.createElement('div');
+        scene.style.cssText = 'position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none';
+        document.body.appendChild(scene);
+
+        var grain = document.createElement('div');
+        grain.style.cssText = 'position:absolute;inset:0;pointer-events:none;background-repeat:repeat;opacity:1';
+        scene.appendChild(grain);
+
+        var gc = document.createElement('canvas');
+        gc.width = gc.height = 256;
+        var gx = gc.getContext('2d');
+
+        function redrawGrain() {
+          var id = gx.createImageData(256, 256);
+          var d  = id.data;
+          for (var i = 0; i < d.length; i += 4) {
+            var v = Math.random() * 255 | 0;
+            d[i] = d[i+1] = d[i+2] = v;
+            d[i+3] = Math.random() * 18 | 0;
+          }
+          gx.putImageData(id, 0, 0);
+          grain.style.backgroundImage = 'url(' + gc.toDataURL() + ')';
+        }
+        redrawGrain();
+        if (!prefersReducedMotion) {
+          setInterval(redrawGrain, 400);
+        }
+
+        // Body content above scene layer
+        document.querySelector('.container').style.position = 'relative';
+        document.querySelector('.container').style.zIndex   = '1';
+
+      })();
+    </script>
+    <script>
+      // ── & analog CRT ─────────────────────────────────────────
+      (function () {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        var el = document.querySelector('.italic');
+        if (!el) return;
+        var hovered = false;
+
+        function rnd(min, max) { return min + Math.random() * (max - min); }
+        function dir() { return Math.random() < 0.5 ? -1 : 1; }
+
+        function rgbSplit(spread, a) {
+          return (-spread).toFixed(1) + 'px 1px rgba(255,30,80,' + a + '),' +
+                  spread.toFixed(1) + 'px -1px rgba(0,210,255,' + a + ')';
+        }
+
+        // Static CRT glitch — the default resting state
+        function holdGlitch() {
+          var d = dir(), spread = rnd(3, 6);
+          el.style.transition = 'none';
+          el.style.filter     = 'blur(1.5px) brightness(' + rnd(1.2, 1.45).toFixed(2) + ')';
+          el.style.transform  = 'translateX(' + (d * rnd(5, 10)).toFixed(1) + 'px)';
+          el.style.textShadow = rgbSplit(spread, 0.65);
+        }
+
+        // SVG noise filter for occasional displacement bursts
+        var ns = 'http://www.w3.org/2000/svg';
+        var svgEl = document.createElementNS(ns, 'svg');
+        svgEl.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden';
+        var defs = document.createElementNS(ns, 'defs');
+        var filt = document.createElementNS(ns, 'filter');
+        filt.setAttribute('id', 'crt-noise');
+        filt.setAttribute('x', '-10%'); filt.setAttribute('y', '-10%');
+        filt.setAttribute('width', '120%'); filt.setAttribute('height', '120%');
+        var turb = document.createElementNS(ns, 'feTurbulence');
+        turb.setAttribute('type', 'turbulence');
+        turb.setAttribute('baseFrequency', '0.65 0.35');
+        turb.setAttribute('numOctaves', '4');
+        turb.setAttribute('seed', '1');
+        var disp = document.createElementNS(ns, 'feDisplacementMap');
+        disp.setAttribute('in', 'SourceGraphic');
+        disp.setAttribute('in2', 'noise');
+        disp.setAttribute('scale', '5');
+        disp.setAttribute('xChannelSelector', 'R');
+        disp.setAttribute('yChannelSelector', 'G');
+        filt.appendChild(turb); filt.appendChild(disp);
+        defs.appendChild(filt); svgEl.appendChild(defs);
+        document.body.appendChild(svgEl);
+
+        // Noise seed runs continuously so it's ready when applied
+        var seed = 1;
+        (function tick() {
+          turb.setAttribute('seed', (seed = seed % 999 + 1));
+          setTimeout(tick, 200);
+        })();
+
+        function scheduleNoise() {
+          setTimeout(function () {
+            if (hovered) { scheduleNoise(); return; }
+            el.style.filter = 'url(#crt-noise) blur(1.5px) brightness(' + rnd(1.2, 1.45).toFixed(2) + ')';
+            setTimeout(function () {
+              if (!hovered) holdGlitch();
+              scheduleNoise();
+            }, rnd(300, 900));
+          }, rnd(5000, 12000));
+        }
+
+        // Apply CRT state immediately — no plain text ever visible
+        holdGlitch();
+        el.style.opacity = '0';
+        el.style.filter  = 'blur(14px) brightness(1.3)'; // override holdGlitch filter for blur-in start
+
+        // Blur in with CRT look intact
+        setTimeout(function () {
+          el.style.transition = 'opacity 1s ease-out, filter 1s ease-out';
+          el.style.opacity    = '1';
+          el.style.filter     = 'blur(1.5px) brightness(1.3)';
+          setTimeout(function () {
+            el.style.transition = 'none';
+            holdGlitch();
+            scheduleNoise();
+          }, 1050);
+        }, 30);
+
+        el.addEventListener('mouseenter', function () {
+          hovered = true;
+          el.style.transition  = 'none';
+          el.style.filter      = 'none';
+          el.style.transform   = '';
+          el.style.textShadow  = '';
+        });
+
+        el.addEventListener('mouseleave', function () {
+          hovered = false;
+          holdGlitch();
+        });
+      })();
+
+      // ── CRT hover for links ───────────────────────────────────
+      (function () {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        function rnd(min, max) { return min + Math.random() * (max - min); }
+        function dir() { return Math.random() < 0.5 ? -1 : 1; }
+        function rgbSplit(spread, a) {
+          return (-spread).toFixed(1) + 'px 1px rgba(255,30,80,' + a + '),' +
+                  spread.toFixed(1) + 'px -1px rgba(0,210,255,' + a + ')';
+        }
+
+        document.querySelectorAll('.info-column-list a, .job-title a').forEach(function (link) {
+          var ver = 0;
+
+          link.addEventListener('mouseenter', function () {
+            var v = ++ver;
+            var d = dir(), spread = rnd(1, 2);
+            var tx1 = d * rnd(1.5, 3), tx2 = -d * rnd(0.5, 1.5);
+
+            // Frame 1 — glitch in
+            link.style.transition  = 'none';
+            link.style.filter      = 'blur(0.5px) brightness(' + rnd(1.2, 1.4).toFixed(2) + ')';
+            link.style.transform   = 'translateX(' + tx1.toFixed(1) + 'px)';
+            link.style.textShadow  = rgbSplit(spread, 0.55);
+
+            setTimeout(function () {
+              if (ver !== v) return;
+              // Frame 2 — counter-glitch
+              link.style.filter     = 'blur(0.3px) brightness(1.1)';
+              link.style.transform  = 'translateX(' + tx2.toFixed(1) + 'px)';
+              link.style.textShadow = rgbSplit(spread * 0.5, 0.3);
+
+              setTimeout(function () {
+                if (ver !== v) return;
+                // Settle — dimmed hover state
+                link.style.transition  = 'filter 0.15s ease, transform 0.15s ease, text-shadow 0.15s ease, opacity 0.15s ease';
+                link.style.filter      = '';
+                link.style.transform   = '';
+                link.style.textShadow  = '';
+                link.style.opacity     = '0.5';
+              }, 60);
+            }, 60);
+          });
+
+          link.addEventListener('mouseleave', function () {
+            ver++;
+            link.style.transition  = 'none';
+            link.style.filter      = '';
+            link.style.transform   = '';
+            link.style.textShadow  = '';
+            link.style.opacity     = '';
+          });
+        });
+      })();
+
+    </script>
     </body>
 </html>
