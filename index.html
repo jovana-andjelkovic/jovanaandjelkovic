@@ -16,7 +16,7 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@0,100..900;1,100..900&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:wght@400;700&display=swap"
             rel="stylesheet"
         />
         <link rel="stylesheet" href="styles.css" />
@@ -63,6 +63,342 @@
             </div>
         </div>
         </main>
+
+        <div id="game-bubble" aria-hidden="true"></div>
+
+        <div
+          id="game-char"
+          role="button"
+          tabindex="0"
+          aria-label="Start game (Space or tap)"
+        ></div>
+
+    <script>
+    // ── Runner game ───────────────────────────────────────
+    (function () {
+      var GROUND_OFFSET = 0;
+      var CHAR_W = 48, CHAR_H = 48;
+      var GRAVITY = 0.6;
+      var JUMP_VY = -13;
+      var OBSTACLE_W = 48;
+      var OBSTACLE_TYPES = [
+        { srcX:  0, srcY:  0, srcW: 32, srcH: 32, w: OBSTACLE_W, h: OBSTACLE_W },
+        { srcX:  0, srcY: 32, srcW: 32, srcH: 32, w: OBSTACLE_W, h: OBSTACLE_W },
+        { srcX:  0, srcY: 64, srcW: 32, srcH: 32, w: OBSTACLE_W, h: OBSTACLE_W },
+        { srcX: 32, srcY:  0, srcW: 32, srcH: 64, w: OBSTACLE_W, h: OBSTACLE_W * 2 },
+      ];
+      var INITIAL_SPEED = 5;
+      var MAX_SPEED = 11;
+      var SPEED_INCREMENT = 0.003;  // rate of approach toward MAX_SPEED
+      var SPEED_DELAY = 8000;       // ms at initial speed before ramping
+      var SPAWN_BASE_MS = 2200;     // base spawn interval at initial speed, scales with speed
+
+      var IDLE = 0, PLAYING = 1, GAME_OVER = 2;
+      var state = IDLE;
+
+      var canvas = document.createElement('canvas');
+      canvas.id = 'game-canvas';
+      document.body.appendChild(canvas);
+      var ctx = canvas.getContext('2d');
+
+      var gameChar = document.getElementById('game-char');
+      var gameBubble = document.getElementById('game-bubble');
+
+      // Game state
+      var charY = 0;        // distance above ground
+      var charVY = 0;
+      var obstacles = [];
+      var score = 0;
+      var rawScore = 0;
+      var speed = INITIAL_SPEED;
+      var rafId = null;
+      var spawnTimer = null;
+      var lastTime = 0;
+      var elapsed = 0;
+      var canRestart = false;
+      var animFrame = 1;
+      var animTimer = 0;
+      var ANIM_INTERVAL = 120; // ms per walk frame
+
+      var canvas2d = canvas; // alias for clarity in glitch closure
+
+      (function glitchLoop() {
+        function rnd(min, max) { return min + Math.random() * (max - min); }
+        function makeFilter(spread, a) {
+          return 'blur(0.6px) brightness(' + rnd(1.1, 1.3).toFixed(2) + ') ' +
+                 'drop-shadow(' + (-spread).toFixed(1) + 'px 1px rgba(255,30,80,' + a + ')) ' +
+                 'drop-shadow(' + spread.toFixed(1) + 'px -1px rgba(0,210,255,' + a + '))';
+        }
+        function tick() {
+          if (state === PLAYING || state === GAME_OVER) {
+            canvas2d.style.filter = makeFilter(rnd(1, 2.5), 0.55);
+          }
+          setTimeout(tick, rnd(80, 250));
+        }
+        function burst() {
+          if (state === PLAYING || state === GAME_OVER) {
+            canvas2d.style.filter = makeFilter(rnd(3, 6), 0.8);
+          }
+          setTimeout(function () {
+            tick();
+            setTimeout(burst, rnd(3000, 7000));
+          }, rnd(150, 400));
+        }
+        tick();
+        setTimeout(burst, rnd(3000, 7000));
+      })();
+      var idleTimer = null;
+
+      function resetIdleTimer() {
+        if (idleTimer) clearTimeout(idleTimer);
+        idleTimer = setTimeout(function () {
+          if (state !== IDLE) hideGame();
+        }, 5000);
+      }
+
+      function clearIdleTimer() {
+        if (idleTimer) { clearTimeout(idleTimer); idleTimer = null; }
+      }
+
+      var sprite = new Image();
+      sprite.src = 'kitty-Sheet.png';
+
+      var obstacleSprite = new Image();
+      obstacleSprite.src = '32-obstacles.png';
+
+      var cssW = window.innerWidth, cssH = window.innerHeight;
+
+      function resize() {
+        var dpr = window.devicePixelRatio || 1;
+        cssW = window.innerWidth;
+        cssH = window.innerHeight;
+        canvas.width  = cssW * dpr;
+        canvas.height = cssH * dpr;
+        canvas.style.width  = cssW + 'px';
+        canvas.style.height = cssH + 'px';
+        ctx.scale(dpr, dpr);
+      }
+      resize();
+      window.addEventListener('resize', resize);
+
+      function groundY() { return cssH - GROUND_OFFSET; }
+      function charX()   { return cssW / 2; }
+
+      function startGame() {
+        if (rafId) cancelAnimationFrame(rafId);
+        if (spawnTimer) clearTimeout(spawnTimer);
+        clearIdleTimer();
+        resetGame();
+        state = PLAYING;
+        gameChar.style.display = 'none';
+        gameBubble.style.display = 'none';
+        lastTime = 0;
+        scheduleSpawn();
+        rafId = requestAnimationFrame(gameLoop);
+      }
+
+      function resetGame() {
+        charY = 0;
+        charVY = 0;
+        obstacles = [];
+        score = 0;
+        rawScore = 0;
+        speed = INITIAL_SPEED;
+        elapsed = 0;
+        animFrame = 1;
+        animTimer = 0;
+      }
+
+      function hideGame() {
+        state = IDLE;
+        if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+        if (spawnTimer) { clearTimeout(spawnTimer); spawnTimer = null; }
+        clearIdleTimer();
+        ctx.clearRect(0, 0, cssW, cssH);
+        canvas.style.filter = 'none';
+        gameChar.style.display = '';
+        gameBubble.style.display = '';
+      }
+
+      function jump() {
+        if (charY <= 0) {
+          charVY = JUMP_VY;
+        }
+      }
+
+      function scheduleSpawn() {
+        // Keep visual gap consistent: interval shrinks as speed grows
+        var base = SPAWN_BASE_MS * (INITIAL_SPEED / speed);
+        var delay = Math.max(600, base * (0.7 + Math.random() * 0.6));
+        spawnTimer = setTimeout(function () {
+          if (state !== PLAYING) return;
+          var t = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
+          obstacles.push({ x: cssW, w: t.w, h: t.h, type: t });
+          scheduleSpawn();
+        }, delay);
+      }
+
+      function checkCollision() {
+        var cx = charX(), cy = groundY() - charY - CHAR_H;
+        var cx2 = cx + CHAR_W, cy2 = cy + CHAR_H;
+        for (var i = 0; i < obstacles.length; i++) {
+          var o = obstacles[i];
+          var ox = o.x, oy = groundY() - o.h;
+          var ox2 = ox + o.w, oy2 = oy + o.h;
+          // AABB with 4px shrink for leniency
+          if (cx2 - 4 > ox + 4 && cx + 4 < ox2 - 4 && cy2 - 4 > oy + 4 && cy + 4 < oy2 - 4) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function endGame() {
+        state = GAME_OVER;
+        canRestart = false;
+        setTimeout(function () { if (state === GAME_OVER) canRestart = true; }, 800);
+        resetIdleTimer(); // auto-idle after 5s of inactivity on game over screen
+        if (spawnTimer) clearTimeout(spawnTimer);
+        cancelAnimationFrame(rafId);
+        rafId = null;
+        drawGameOver();
+      }
+
+      function drawGameOver() {
+        var vw = cssW, vh = cssH;
+        var pill = { w: 140, h: 36 };
+        var px = charX() - pill.w / 2, py = cssH - pill.h - 8;
+        ctx.fillStyle = 'rgba(33,17,73,0.88)';
+        if (ctx.roundRect) {
+          ctx.beginPath();
+          ctx.roundRect(px, py, pill.w, pill.h, 6);
+          ctx.fill();
+        } else {
+          ctx.fillRect(px, py, pill.w, pill.h);
+        }
+
+        ctx.textAlign = 'center';
+        ctx.fillStyle = '#EAE7F2';
+        ctx.font = 'bold 11px "JetBrains Mono", monospace';
+        ctx.fillText('GAME OVER  ' + score + ' m', charX(), py + 15);
+
+        ctx.fillStyle = 'rgba(234,231,242,0.55)';
+        ctx.font = '9px "JetBrains Mono", monospace';
+        ctx.fillText('SPACE · TAP TO RESTART', charX(), py + 28);
+      }
+
+      function gameLoop(timestamp) {
+        if (!lastTime) lastTime = timestamp;
+        var dt = Math.min((timestamp - lastTime) / 16.67, 3); // normalise to ~60fps frames
+        lastTime = timestamp;
+
+        elapsed += dt * 16.67;
+        if (elapsed > SPEED_DELAY) {
+          // Asymptotic ramp — accelerates quickly at first, flattens near MAX_SPEED
+          speed += SPEED_INCREMENT * ((MAX_SPEED - speed) / MAX_SPEED) * dt * 16.67;
+        }
+
+        animTimer += dt * 16.67;
+        if (animTimer >= ANIM_INTERVAL) {
+          animTimer -= ANIM_INTERVAL;
+          animFrame = animFrame === 1 ? 2 : 1;
+        }
+
+        // Physics
+        charVY += GRAVITY * dt;
+        charY -= charVY * dt;
+        if (charY <= 0) { charY = 0; charVY = 0; }
+
+        // Move obstacles
+        for (var i = obstacles.length - 1; i >= 0; i--) {
+          obstacles[i].x -= speed * dt;
+          if (obstacles[i].x + obstacles[i].w < 0) obstacles.splice(i, 1);
+        }
+
+        rawScore += speed * dt * 0.1;
+        score = Math.floor(rawScore);
+
+        if (checkCollision()) { draw(); endGame(); return; }
+
+        draw();
+        rafId = requestAnimationFrame(gameLoop);
+      }
+
+      function draw() {
+        var vw = cssW, vh = cssH;
+        ctx.clearRect(0, 0, vw, vh);
+
+        // Ground line
+        ctx.beginPath();
+        ctx.moveTo(0, groundY());
+        ctx.lineTo(vw, groundY());
+        ctx.strokeStyle = 'rgba(109,121,202,0.35)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+
+        // Character
+        var cx = Math.floor(charX()), cy = Math.floor(groundY() - charY - CHAR_H);
+        var frameIdx = charY > 0 ? 0 : animFrame;
+        ctx.imageSmoothingEnabled = false;
+        ctx.drawImage(sprite, frameIdx * 32, 0, 32, 32, cx, cy, CHAR_W, CHAR_H);
+
+        // Obstacles
+        ctx.imageSmoothingEnabled = false;
+        for (var i = 0; i < obstacles.length; i++) {
+          var o = obstacles[i];
+          ctx.drawImage(obstacleSprite, o.type.srcX, o.type.srcY, o.type.srcW, o.type.srcH, Math.floor(o.x), Math.floor(groundY() - o.h), o.w, o.h);
+        }
+
+        // Score
+        ctx.textAlign = 'right';
+        ctx.fillStyle = 'rgba(33,17,73,0.65)';
+        ctx.font = '13px "JetBrains Mono", monospace';
+        ctx.fillText(score + ' m', vw - 16, 20);
+      }
+
+      // ── Input handling ────────────────────────────────────
+      document.addEventListener('keydown', function (e) {
+        if (e.code === 'Escape') {
+          if (state !== IDLE) hideGame();
+          return;
+        }
+        if (e.code !== 'Space') return;
+        e.preventDefault();
+        if (state === IDLE)                        startGame();
+        else if (state === PLAYING)                jump();
+        else if (state === GAME_OVER && canRestart) startGame();
+      });
+
+      gameChar.addEventListener('click', function () {
+        if (state === IDLE) startGame();
+      });
+      gameChar.addEventListener('keydown', function (e) {
+        if (e.code === 'Enter' || e.code === 'Space') {
+          e.preventDefault();
+          if (state === IDLE) startGame();
+        }
+      });
+
+      document.addEventListener('click', function (e) {
+        if (e.target.closest('a, button, [role="button"], input, label')) return;
+        if (state === PLAYING)                      jump();
+        else if (state === GAME_OVER && canRestart) startGame();
+      });
+
+      document.addEventListener('touchstart', function (e) {
+        if (e.target.closest('a, button, [role="button"], input, label')) return;
+        e.preventDefault();
+        if (state === PLAYING)                      jump();
+        else if (state === GAME_OVER && canRestart) startGame();
+      }, { passive: false });
+
+      gameChar.addEventListener('touchstart', function (e) {
+        e.preventDefault();
+        if (state === IDLE) startGame();
+      }, { passive: false });
+
+    })();
+    </script>
 
     <script>
       (function () {
@@ -346,6 +682,125 @@
             link.style.opacity     = '';
           });
         });
+      })();
+
+      // ── Character materialisation ─────────────────────────
+      (function () {
+        var el = document.getElementById('game-char');
+        if (!el) return;
+
+        function rnd(min, max) { return min + Math.random() * (max - min); }
+
+        setTimeout(function () {
+          var total = 28;
+          var step  = 0;
+
+          function tick() {
+            var p = step / total; // 0 → 1 progress
+
+            // Visibility: starts unreliable, locks in near the end
+            var visible = p > 0.88 || Math.random() < (0.15 + p * 0.85);
+
+            // Effects burn bright then resolve
+            var blur       = ((1 - p) * 7 + 0.6).toFixed(1);
+            var brightness = (2.2 - p * 1.0).toFixed(2);
+            var glow       = ((1 - p) * 16).toFixed(0);
+            var split      = ((1 - p) * 5 + 1.5).toFixed(1);
+            var glowAlpha  = ((1 - p) * 0.9).toFixed(2);
+            var splitAlpha = (0.35 + (1 - p) * 0.45).toFixed(2);
+
+            el.style.opacity = visible ? '1' : '0';
+            el.style.filter  =
+              'blur(' + blur + 'px) brightness(' + brightness + ') ' +
+              'drop-shadow(0 0 ' + glow + 'px rgba(109,121,202,' + glowAlpha + ')) ' +
+              'drop-shadow(-' + split + 'px 1px rgba(255,30,80,' + splitAlpha + ')) ' +
+              'drop-shadow(' + split + 'px -1px rgba(0,210,255,' + splitAlpha + '))';
+
+            step++;
+            if (step <= total) {
+              // Fast at first, decelerates as it stabilises
+              setTimeout(tick, 30 + p * p * 120);
+            } else {
+              el.style.opacity = '1';
+              el.style.filter  = '';
+              // CRT glitch takes over from here
+            }
+          }
+
+          tick();
+        }, 2000);
+      })();
+
+      // ── Idle bubble CRT glitch ────────────────────────────
+      (function () {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        var el = document.getElementById('game-bubble');
+        if (!el) return;
+
+        function rnd(min, max) { return min + Math.random() * (max - min); }
+
+        function rgbSplit(spread, a) {
+          return 'drop-shadow(' + (-spread).toFixed(1) + 'px 1px rgba(255,30,80,' + a + ')) ' +
+                 'drop-shadow(' + spread.toFixed(1)  + 'px -1px rgba(0,210,255,' + a + '))';
+        }
+
+        function holdGlitch() {
+          var spread = rnd(1.5, 3.5);
+          el.style.filter = 'blur(0.6px) brightness(' + rnd(1.1, 1.3).toFixed(2) + ') ' + rgbSplit(spread, 0.55);
+        }
+
+        function scheduleNoise() {
+          setTimeout(function () {
+            el.style.filter = 'url(#crt-noise) blur(0.6px) brightness(' + rnd(1.1, 1.3).toFixed(2) + ')';
+            setTimeout(function () {
+              holdGlitch();
+              scheduleNoise();
+            }, rnd(200, 700));
+          }, rnd(2000, 6000));
+        }
+
+        // Start after bubble fades in
+        setTimeout(function () {
+          holdGlitch();
+          scheduleNoise();
+        }, 2000);
+      })();
+
+      // ── Idle character CRT glitch ─────────────────────────
+      (function () {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        var el = document.getElementById('game-char');
+        if (!el) return;
+
+        function rnd(min, max) { return min + Math.random() * (max - min); }
+
+        function rgbSplit(spread, a) {
+          return 'drop-shadow(' + (-spread).toFixed(1) + 'px 1px rgba(255,30,80,' + a + ')) ' +
+                 'drop-shadow(' + spread.toFixed(1)  + 'px -1px rgba(0,210,255,' + a + '))';
+        }
+
+        function holdGlitch() {
+          var spread = rnd(1.5, 3.5);
+          el.style.filter = 'blur(0.6px) brightness(' + rnd(1.1, 1.3).toFixed(2) + ') ' + rgbSplit(spread, 0.55);
+        }
+
+        function scheduleNoise() {
+          setTimeout(function () {
+            el.style.filter = 'url(#crt-noise) blur(0.6px) brightness(' + rnd(1.1, 1.3).toFixed(2) + ')';
+            setTimeout(function () {
+              holdGlitch();
+              scheduleNoise();
+            }, rnd(200, 700));
+          }, rnd(2000, 6000));
+        }
+
+        // Start after materialisation resolves
+        setTimeout(function () {
+          holdGlitch();
+          scheduleNoise();
+        }, 3600);
       })();
 
     </script>
