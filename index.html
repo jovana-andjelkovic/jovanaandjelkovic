@@ -82,11 +82,27 @@
       var JUMP_VY = -13;
       var OBSTACLE_W = 48;
       var OBSTACLE_TYPES = [
-        { srcX:  0, srcY:  0, srcW: 32, srcH: 32, w: OBSTACLE_W, h: OBSTACLE_W },
-        { srcX:  0, srcY: 32, srcW: 32, srcH: 32, w: OBSTACLE_W, h: OBSTACLE_W },
-        { srcX:  0, srcY: 64, srcW: 32, srcH: 32, w: OBSTACLE_W, h: OBSTACLE_W },
-        { srcX: 32, srcY:  0, srcW: 32, srcH: 64, w: OBSTACLE_W, h: OBSTACLE_W * 2 },
+        { srcX:  0, srcY:  0, srcW: 32, srcH: 32, w: OBSTACLE_W, h: OBSTACLE_W,     weight: 3 },
+        { srcX:  0, srcY: 32, srcW: 32, srcH: 32, w: OBSTACLE_W, h: OBSTACLE_W,     weight: 3 },
+        { srcX: 32, srcY:  0, srcW: 32, srcH: 64, w: OBSTACLE_W, h: OBSTACLE_W * 2, weight: 3 },
+        { srcX:  0, srcY: 64, srcW: 32, srcH: 32, w: OBSTACLE_W, h: OBSTACLE_W,     weight: 1, overhead: true },
       ];
+
+      function pickObstacleType() {
+        var total = 0;
+        for (var i = 0; i < OBSTACLE_TYPES.length; i++) total += OBSTACLE_TYPES[i].weight;
+        var r = Math.random() * total, cum = 0;
+        for (var i = 0; i < OBSTACLE_TYPES.length; i++) {
+          cum += OBSTACLE_TYPES[i].weight;
+          if (r < cum) return OBSTACLE_TYPES[i];
+        }
+        return OBSTACLE_TYPES[0];
+      }
+
+      function obstacleY(o) {
+        // Overhead: float just above the character's head when standing
+        return o.type.overhead ? groundY() - CHAR_H - o.h : groundY() - o.h;
+      }
       var INITIAL_SPEED = 5;
       var MAX_SPEED = 11;
       var SPEED_INCREMENT = 0.003;  // rate of approach toward MAX_SPEED
@@ -101,6 +117,12 @@
       document.body.appendChild(canvas);
       var ctx = canvas.getContext('2d');
 
+      // Ground on its own canvas so the CRT glitch filter doesn't affect it
+      var groundCanvas = document.createElement('canvas');
+      groundCanvas.style.cssText = 'position:fixed;inset:0;z-index:1;pointer-events:none';
+      document.body.appendChild(groundCanvas);
+      var gndCtx = groundCanvas.getContext('2d');
+
       var gameChar = document.getElementById('game-char');
       var gameBubble = document.getElementById('game-bubble');
 
@@ -111,11 +133,13 @@
       var score = 0;
       var rawScore = 0;
       var speed = INITIAL_SPEED;
+      var groundScrollX = 0;
       var rafId = null;
       var spawnTimer = null;
       var lastTime = 0;
       var elapsed = 0;
       var canRestart = false;
+      var spaceDown = false;
       var animFrame = 1;
       var animTimer = 0;
       var ANIM_INTERVAL = 120; // ms per walk frame
@@ -166,6 +190,11 @@
       var obstacleSprite = new Image();
       obstacleSprite.src = 'images/32-obstacles.png';
 
+      var groundSprite = new Image();
+      groundSprite.src = 'images/ground.png';
+
+      var groundTiles = [];
+
       var cssW = window.innerWidth, cssH = window.innerHeight;
 
       function resize() {
@@ -176,13 +205,51 @@
         canvas.height = cssH * dpr;
         canvas.style.width  = cssW + 'px';
         canvas.style.height = cssH + 'px';
-        ctx.scale(dpr, dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        groundCanvas.width  = cssW * dpr;
+        groundCanvas.height = cssH * dpr;
+        groundCanvas.style.width  = cssW + 'px';
+        groundCanvas.style.height = cssH + 'px';
+        gndCtx.setTransform(dpr, 0, 0, dpr, 0, 0);
       }
       resize();
-      window.addEventListener('resize', resize);
+      window.addEventListener('resize', function () { resize(); buildGroundTiles(); });
+
+      function buildGroundTiles() {
+        var count = Math.ceil(cssW / 32) + 1;
+        groundTiles = [];
+        for (var i = 0; i < count; i++) {
+          groundTiles.push(Math.floor(Math.random() * 6));
+        }
+      }
+      buildGroundTiles();
+
+      function drawGround() {
+        gndCtx.clearRect(0, 0, cssW, cssH);
+        gndCtx.imageSmoothingEnabled = false;
+        var totalW = groundTiles.length * 32;
+        var offsetX = groundScrollX % totalW;
+        var startTile = Math.floor(offsetX / 32);
+        var startX = -(offsetX % 32);
+        for (var g = 0; g * 32 + startX < cssW + 32; g++) {
+          var tileIdx = groundTiles[(startTile + g) % groundTiles.length];
+          gndCtx.drawImage(groundSprite, tileIdx * 32, 0, 32, 32, Math.floor(g * 32 + startX), groundY() - 32, 32, 32);
+        }
+      }
+
+      // Persistent idle render — keeps ground visible when not playing
+      (function idleRender() {
+        requestAnimationFrame(idleRender);
+        if (state !== IDLE) return;
+        ctx.clearRect(0, 0, cssW, cssH);
+        drawGround(); // draws to groundCanvas
+      })();
 
       function groundY() { return cssH - GROUND_OFFSET; }
-      function charX()   { return cssW / 2; }
+      function charX()   {
+        var center = cssW <= 768 ? cssW * 0.25 : cssW * 0.5;
+        return center - CHAR_W / 2;
+      }
 
       function startGame() {
         if (rafId) cancelAnimationFrame(rafId);
@@ -207,6 +274,7 @@
         elapsed = 0;
         animFrame = 1;
         animTimer = 0;
+        groundScrollX = 0;
       }
 
       function hideGame() {
@@ -232,7 +300,7 @@
         var delay = Math.max(600, base * (0.7 + Math.random() * 0.6));
         spawnTimer = setTimeout(function () {
           if (state !== PLAYING) return;
-          var t = OBSTACLE_TYPES[Math.floor(Math.random() * OBSTACLE_TYPES.length)];
+          var t = pickObstacleType();
           obstacles.push({ x: cssW, w: t.w, h: t.h, type: t });
           scheduleSpawn();
         }, delay);
@@ -243,7 +311,7 @@
         var cx2 = cx + CHAR_W, cy2 = cy + CHAR_H;
         for (var i = 0; i < obstacles.length; i++) {
           var o = obstacles[i];
-          var ox = o.x, oy = groundY() - o.h;
+          var ox = o.x, oy = obstacleY(o);
           var ox2 = ox + o.w, oy2 = oy + o.h;
           // AABB with 4px shrink for leniency
           if (cx2 - 4 > ox + 4 && cx + 4 < ox2 - 4 && cy2 - 4 > oy + 4 && cy + 4 < oy2 - 4) {
@@ -255,8 +323,8 @@
 
       function endGame() {
         state = GAME_OVER;
-        canRestart = false;
-        setTimeout(function () { if (state === GAME_OVER) canRestart = true; }, 800);
+        // If Space isn't held right now, arm restart immediately; otherwise wait for key-up
+        canRestart = !spaceDown;
         resetIdleTimer(); // auto-idle after 5s of inactivity on game over screen
         if (spawnTimer) clearTimeout(spawnTimer);
         cancelAnimationFrame(rafId);
@@ -267,7 +335,7 @@
       function drawGameOver() {
         var vw = cssW, vh = cssH;
         var pill = { w: 140, h: 36 };
-        var px = charX() - pill.w / 2, py = cssH - pill.h - 8;
+        var px = cssW / 2 - pill.w / 2, py = cssH - pill.h - 8;
         ctx.fillStyle = 'rgba(33,17,73,0.88)';
         if (ctx.roundRect) {
           ctx.beginPath();
@@ -278,13 +346,13 @@
         }
 
         ctx.textAlign = 'center';
-        ctx.fillStyle = '#EAE7F2';
+        ctx.fillStyle = '#ffffff';
         ctx.font = 'bold 11px "JetBrains Mono", monospace';
-        ctx.fillText('GAME OVER  ' + score + ' m', charX(), py + 15);
+        ctx.fillText('GAME OVER  ' + score + ' m', cssW / 2, py + 15);
 
-        ctx.fillStyle = 'rgba(234,231,242,0.55)';
+        ctx.fillStyle = '#ffffff';
         ctx.font = '9px "JetBrains Mono", monospace';
-        ctx.fillText('SPACE · TAP TO RESTART', charX(), py + 28);
+        ctx.fillText('SPACE · TAP TO RESTART', cssW / 2, py + 28);
       }
 
       function gameLoop(timestamp) {
@@ -309,7 +377,8 @@
         charY -= charVY * dt;
         if (charY <= 0) { charY = 0; charVY = 0; }
 
-        // Move obstacles
+        // Move obstacles + scroll ground
+        groundScrollX += speed * dt;
         for (var i = obstacles.length - 1; i >= 0; i--) {
           obstacles[i].x -= speed * dt;
           if (obstacles[i].x + obstacles[i].w < 0) obstacles.splice(i, 1);
@@ -317,6 +386,8 @@
 
         rawScore += speed * dt * 0.1;
         score = Math.floor(rawScore);
+
+        drawGround();
 
         if (checkCollision()) { draw(); endGame(); return; }
 
@@ -328,14 +399,6 @@
         var vw = cssW, vh = cssH;
         ctx.clearRect(0, 0, vw, vh);
 
-        // Ground line
-        ctx.beginPath();
-        ctx.moveTo(0, groundY());
-        ctx.lineTo(vw, groundY());
-        ctx.strokeStyle = 'rgba(109,121,202,0.35)';
-        ctx.lineWidth = 1.2;
-        ctx.stroke();
-
         // Character
         var cx = Math.floor(charX()), cy = Math.floor(groundY() - charY - CHAR_H);
         var frameIdx = charY > 0 ? 0 : animFrame;
@@ -346,7 +409,7 @@
         ctx.imageSmoothingEnabled = false;
         for (var i = 0; i < obstacles.length; i++) {
           var o = obstacles[i];
-          ctx.drawImage(obstacleSprite, o.type.srcX, o.type.srcY, o.type.srcW, o.type.srcH, Math.floor(o.x), Math.floor(groundY() - o.h), o.w, o.h);
+          ctx.drawImage(obstacleSprite, o.type.srcX, o.type.srcY, o.type.srcW, o.type.srcH, Math.floor(o.x), Math.floor(obstacleY(o)), o.w, o.h);
         }
 
         // Score
@@ -364,9 +427,16 @@
         }
         if (e.code !== 'Space') return;
         e.preventDefault();
-        if (state === IDLE)                        startGame();
-        else if (state === PLAYING)                jump();
+        spaceDown = true;
+        if (state === IDLE)                         startGame();
+        else if (state === PLAYING)                 jump();
         else if (state === GAME_OVER && canRestart) startGame();
+      });
+
+      document.addEventListener('keyup', function (e) {
+        if (e.code !== 'Space') return;
+        spaceDown = false;
+        if (state === GAME_OVER) canRestart = true;
       });
 
       gameChar.addEventListener('click', function () {
@@ -391,6 +461,10 @@
         if (state === PLAYING)                      jump();
         else if (state === GAME_OVER && canRestart) startGame();
       }, { passive: false });
+
+      document.addEventListener('touchend', function (e) {
+        if (state === GAME_OVER) canRestart = true;
+      }, { passive: true });
 
       gameChar.addEventListener('touchstart', function (e) {
         e.preventDefault();
@@ -722,8 +796,9 @@
               setTimeout(tick, 30 + p * p * 120);
             } else {
               el.style.opacity = '1';
-              el.style.filter  = '';
-              // CRT glitch takes over from here
+              // Leave the final tick's filter in place — it already has a
+              // subtle chromatic split. The idle CRT glitch loop takes over
+              // from here and will overwrite it on its next cycle.
             }
           }
 

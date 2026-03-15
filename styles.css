@@ -299,6 +299,16 @@ body {
     to { opacity: 1; }
 }
 
+@media (max-width: 768px) {
+    #game-char {
+        left: 25%;
+    }
+
+    #game-bubble {
+        left: calc(25% + 44px);
+    }
+}
+
 #game-canvas {
     position: fixed;
     inset: 0;
