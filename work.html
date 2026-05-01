@@ -8,12 +8,21 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:wght@400;700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Roboto+Serif:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:wght@400;700&display=swap"
             rel="stylesheet"
         />
         <link rel="stylesheet" href="styles.css" />
+        <script>
+        (function () {
+            var d = document.createElement('div');
+            d.style.cssText = 'overflow:scroll;width:100px;height:100px;visibility:hidden;position:absolute;top:-9999px;';
+            document.documentElement.appendChild(d);
+            document.documentElement.style.setProperty('--sb-w', (d.offsetWidth - d.clientWidth) + 'px');
+            document.documentElement.removeChild(d);
+        })();
+        </script>
     </head>
-    <body>
+    <body class="work-page">
         <a href="#main-content" class="skip-link">Skip to main content</a>
         <nav class="main-nav" aria-label="Main">
             <ul>
@@ -22,13 +31,238 @@
             </ul>
         </nav>
         <main id="main-content">
-            <div class="container work-container">
-                <div class="left-section">
-                    <h1 class="main-title">Work</h1>
-                    <p class="job-title">Coming soon.</p>
+            <header class="work-page-header">
+                <h1 class="main-title work-page-title">
+                    Selected <span class="italic">work</span>
+                </h1>
+                <p class="work-page-subtitle">
+                    Happy to discuss projects in detail. Reach out to me on
+                    <a
+                        href="https://www.linkedin.com/in/andelkovic-jovana/"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        >LinkedIn</a
+                    >
+                    to schedule a call.
+                </p>
+            </header>
+            <div class="container">
+                <div class="left-section work-list">
+                    <!-- TODO: replace each placeholder with a real project -->
+                    <article class="work-article">
+                        <figure class="work-cover">
+                            <img
+                                src="images/work/elastic-cc.png"
+                                alt="Elastic Cloud Connect"
+                            />
+                        </figure>
+                        <div class="work-content">
+                            <div class="work-meta">
+                                <img
+                                    class="work-logo"
+                                    src="images/logos/elastic.png"
+                                    alt="Elastic"
+                                />
+                                <span class="work-date">2025-2026</span>
+                            </div>
+                            <h1 class="work-title">
+                                Cloud connect - bridge the gap between Cloud
+                                services & self-managed clusters
+                            </h1>
+                            <p class="work-body">I did a lot here tbh.</p>
+                        </div>
+                    </article>
+
+                    <article class="work-article">
+                        <figure class="work-cover">
+                            <img
+                                src="images/work/elastic-deprecation.png"
+                                alt="Elastic feature deprecation standards"
+                            />
+                        </figure>
+                        <div class="work-content">
+                            <div class="work-meta">
+                                <img
+                                    class="work-logo"
+                                    src="images/logos/elastic.png"
+                                    alt="Elastic"
+                                />
+                                <span class="work-date">2025</span>
+                            </div>
+                            <h1 class="work-title">
+                                Feature deprecation standards
+                            </h1>
+                            <p class="work-body">
+                                I created a standard for how we deprecate
+                                features, how we display the messaging across
+                                the UI and aligned stakeholders, going up to
+                                director level on both engineering and design
+                                side.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="work-article">
+                        <figure class="work-cover">
+                            <img
+                                src="images/work/getyourguide-search.png"
+                                alt="GetYourGuide search results"
+                            />
+                        </figure>
+                        <div class="work-content">
+                            <div class="work-meta">
+                                <img
+                                    class="work-logo"
+                                    src="images/logos/getyourguide.png"
+                                    alt="GetYourGuide"
+                                />
+                                <span class="work-date">2022</span>
+                            </div>
+                            <h1 class="work-title">
+                                Discovery and search at a high-traffic B2C
+                                travel platform
+                            </h1>
+                            <p class="work-body">
+                                GetYourGuide attracts around 25 million monthly
+                                visitors. I worked on two projects shaping how
+                                they discover and search activities, using data
+                                analysis and user research to inform decisions
+                                alongside the wider team. The work improved the
+                                user journey and contributed to a positive
+                                impact on global conversion rate. It also
+                                deepened my understanding of consumer search
+                                behaviour and directly inspired a filter vision
+                                initiative I went on to drive.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="work-article">
+                        <figure class="work-cover">
+                            <img
+                                src="images/work/brokeriq-query.png"
+                                alt="BrokerIQ query builder"
+                            />
+                        </figure>
+                        <div class="work-content">
+                            <div class="work-meta">
+                                <img
+                                    class="work-logo"
+                                    src="images/logos/tradecore.png"
+                                    alt="TradeCore"
+                                />
+                                <span class="work-date">2019</span>
+                            </div>
+                            <h1 class="work-title">
+                                Reducing complexity in data querying and
+                                filtering
+                            </h1>
+                            <p class="work-body">
+                                Filters were tightly coupled to column
+                                visibility, making them unusable on data-heavy
+                                tables. The query builder had a related issue
+                                where unclear condition grouping was driving
+                                consistent Customer Success requests. I used
+                                observation and research to ground the redesign
+                                of both and worked with engineering to ship
+                                them. Requests related to querying dropped
+                                significantly within the first few months.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="work-article">
+                        <figure class="work-cover">
+                            <img
+                                src="images/work/brokeriq-design-system.png"
+                                alt="BrokerIQ design system overview"
+                            />
+                        </figure>
+                        <div class="work-content">
+                            <div class="work-meta">
+                                <img
+                                    class="work-logo"
+                                    src="images/logos/tradecore.png"
+                                    alt="TradeCore"
+                                />
+                                <span class="work-date">2018-2019</span>
+                            </div>
+                            <h1 class="work-title">
+                                Design system for complex B2B fintech
+                            </h1>
+                            <p class="work-body">
+                                I led the implementation of TradeCore's first
+                                design system to improve consistency, speed up
+                                delivery, and give engineering and design a
+                                shared language. I reviewed the existing
+                                codebase to ground the specs, ran research to
+                                validate decisions, and sequenced the rollout so
+                                engineering could move in parallel. It was
+                                adopted across our existing product suite and
+                                became the foundation for every new one.
+                            </p>
+                        </div>
+                    </article>
                 </div>
+
+                <aside class="right-section" aria-labelledby="latest-heading">
+                    <span class="info-column-label" id="latest-heading"
+                        >Recently shipped at Elastic</span
+                    >
+                    <ul class="latest-list">
+                        <li>
+                            <span class="latest-date">2026</span>
+                            <a
+                                href="https://www.elastic.co/search-labs/blog/kibana-query-activity-long-running-searches"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >Query activity in Kibana: a live control tower
+                                for long-running searches</a
+                            >
+                        </li>
+                        <li>
+                            <span class="latest-date">2026</span>
+                            <a
+                                href="https://www.elastic.co/platform/autoops"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >AutoOps: cluster management utility</a
+                            >
+                        </li>
+                        <li>
+                            <span class="latest-date">2026</span>
+                            <a
+                                href="https://www.elastic.co/search-labs/blog/cloud-connect-elastic-inference-service"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >Skip MLOps: managed cloud inference via Cloud
+                                Connect</a
+                            >
+                        </li>
+                        <li>
+                            <span class="latest-date">2025</span>
+                            <a
+                                href="https://www.elastic.co/search-labs/blog/elastic-autoops-self-managed-elasticsearch"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >AutoOps: simplifying self-managed
+                                Elasticsearch</a
+                            >
+                        </li>
+                        <li>
+                            <span class="latest-date">2025</span>
+                            <a
+                                href="https://www.elastic.co/blog/whats-new-elastic-platform-9-0-0"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                >Data stream reindexing in Upgrade Assistant
+                                (Elastic 9.0)</a
+                            >
+                        </li>
+                    </ul>
+                </aside>
             </div>
         </main>
-    <script src="link-hover.js"></script>
+        <script src="link-hover.js"></script>
     </body>
 </html>

@@ -16,10 +16,19 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:wght@400;700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Roboto+Serif:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:wght@400;700&display=swap"
             rel="stylesheet"
         />
         <link rel="stylesheet" href="styles.css" />
+        <script>
+        (function () {
+            var d = document.createElement('div');
+            d.style.cssText = 'overflow:scroll;width:100px;height:100px;visibility:hidden;position:absolute;top:-9999px;';
+            document.documentElement.appendChild(d);
+            document.documentElement.style.setProperty('--sb-w', (d.offsetWidth - d.clientWidth) + 'px');
+            document.documentElement.removeChild(d);
+        })();
+        </script>
     </head>
     <body>
         <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -87,6 +96,10 @@
                     <li>
                         <span class="latest-date">2025</span>
                         <a href="https://www.elastic.co/search-labs/blog/elastic-autoops-self-managed-elasticsearch" target="_blank" rel="noopener noreferrer">AutoOps: simplifying self-managed Elasticsearch</a>
+                    </li>
+                    <li>
+                        <span class="latest-date">2025</span>
+                        <a href="https://www.elastic.co/blog/whats-new-elastic-platform-9-0-0" target="_blank" rel="noopener noreferrer">Data stream reindexing in Upgrade Assistant (Elastic 9.0)</a>
                     </li>
                 </ul>
                 <a href="work.html" class="latest-cta">See more projects →</a>
@@ -454,7 +467,7 @@
         ctx.fillStyle = 'rgba(33,17,73,0.65)';
         ctx.font = '13px "JetBrains Mono", monospace';
         ctx.textBaseline = 'middle';
-        ctx.fillText(score + ' m', vw - 32, 28);
+        ctx.fillText(score + ' m', vw - 80, 28);
         ctx.textBaseline = 'alphabetic';
       }
 
@@ -540,8 +553,9 @@
 
         function resizeGrid() {
           var vw = window.innerWidth, vh = window.innerHeight;
-          gW = gridCanvas.width  = Math.ceil(vw * 1.8);
-          gH = gridCanvas.height = Math.ceil(vh * 1.8);
+          var maxDim = Math.max(vw, vh);
+          gW = gridCanvas.width  = Math.ceil(maxDim * 1.8);
+          gH = gridCanvas.height = Math.ceil(maxDim * 1.8);
           gridCanvas.style.width  = gW + 'px';
           gridCanvas.style.height = gH + 'px';
           gridCanvas.style.left   = Math.round((vw - gW) / 2) + 'px';

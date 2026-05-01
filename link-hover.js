@@ -1,3 +1,13 @@
+// ── Toggle .has-sb on body when scrollbar is present ────
+(function () {
+    function update() {
+        var hasSb = window.innerWidth - document.documentElement.clientWidth > 0;
+        document.body.classList.toggle('has-sb', hasSb);
+    }
+    update();
+    window.addEventListener('resize', update);
+})();
+
 // ── Nav scroll blur ───────────────────────────────────────
 (function () {
     var nav = document.querySelector('.main-nav');
