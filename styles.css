@@ -440,6 +440,10 @@ body:not(.work-page):not(.has-sb) .main-nav {
     gap: 12px;
 }
 
+.work-meta:has(img.work-logo[src*="getyourguide"]) {
+    margin-bottom: -9px;
+}
+
 .work-meta .work-logo + .work-date::before {
     content: "";
     display: inline-block;
@@ -467,6 +471,7 @@ div.work-logo {
 img.work-logo[src*="getyourguide"] {
     height: 40px;
 }
+
 
 img.work-logo[src*="tradecore"] {
     height: 20px;
