@@ -13,13 +13,17 @@
         />
         <link rel="stylesheet" href="styles.css" />
         <script>
-        (function () {
-            var d = document.createElement('div');
-            d.style.cssText = 'overflow:scroll;width:100px;height:100px;visibility:hidden;position:absolute;top:-9999px;';
-            document.documentElement.appendChild(d);
-            document.documentElement.style.setProperty('--sb-w', (d.offsetWidth - d.clientWidth) + 'px');
-            document.documentElement.removeChild(d);
-        })();
+            (function () {
+                var d = document.createElement("div");
+                d.style.cssText =
+                    "overflow:scroll;width:100px;height:100px;visibility:hidden;position:absolute;top:-9999px;";
+                document.documentElement.appendChild(d);
+                document.documentElement.style.setProperty(
+                    "--sb-w",
+                    d.offsetWidth - d.clientWidth + "px",
+                );
+                document.documentElement.removeChild(d);
+            })();
         </script>
     </head>
     <body class="work-page">
@@ -52,6 +56,42 @@
                     <article class="work-article">
                         <figure class="work-cover">
                             <img
+                                src="images/work/elastic-cc.png"
+                                alt="Elastic Cloud Connect"
+                            />
+                        </figure>
+                        <div class="work-content">
+                            <div class="work-meta">
+                                <img
+                                    class="work-logo"
+                                    src="images/logos/elastic.png"
+                                    alt="Elastic"
+                                />
+                                <span class="work-date">2025-2026</span>
+                            </div>
+                            <h1 class="work-title">
+                                Simple is the hard part: connecting self-managed
+                                clusters to cloud services
+                            </h1>
+                            <p class="work-body">
+                                Cloud Connect lets self-managed Elasticsearch
+                                deployments consume specific Elastic Cloud
+                                services without taking on the operational
+                                overhead of running them. The visible UI was the
+                                easy part. The hard part was getting the
+                                underlying system, the implementation, and the
+                                user experience to fit together well, and
+                                aligning everyone involved on the approach. I
+                                used prototypes to explore options and to anchor
+                                those conversations. Shipped and in active use,
+                                with follow-on services extending the model.
+                            </p>
+                        </div>
+                    </article>
+
+                    <article class="work-article">
+                        <figure class="work-cover">
+                            <img
                                 src="images/work/brokeriq-design-system.png"
                                 alt="BrokerIQ design system overview"
                             />
@@ -66,28 +106,87 @@
                                 <span class="work-date">2018-2019</span>
                             </div>
                             <h1 class="work-title">
-                                Design system for complex B2B fintech
+                                Building a design system from scratch in a
+                                complex B2B fintech
                             </h1>
                             <p class="work-body">
-                                I led the implementation of TradeCore's first
-                                design system to improve consistency, speed up
-                                delivery, and give engineering and design a
-                                shared language. I reviewed the existing
-                                codebase to ground the specs, ran research to
-                                validate decisions, and sequenced the rollout so
-                                engineering could move in parallel. It was
-                                adopted across our existing product suite and
-                                became the foundation for every new one.
+                                TradeCore's product had grown faster than its
+                                foundation, and a design system wasn't a
+                                priority. I started one anyway, in the gaps
+                                between other work, and used the early progress
+                                to make the case. That work earned buy-in and
+                                the resources to finish it properly. I built it
+                                from scratch and brought two in-house designers
+                                and one external contractor through the rollout.
+                                The system improved consistency, sped up
+                                delivery, and gave engineering and design a
+                                shared way of working. Adopted across the
+                                existing product suite and remained the
+                                foundation for new products for several years.
                             </p>
                         </div>
                     </article>
 
                     <article class="work-article">
-                        <figure class="work-cover">
+                        <figure
+                            class="work-cover work-compare"
+                            data-compare
+                            style="--compare-pos: 20%"
+                        >
                             <img
-                                src="images/work/brokeriq-query.png"
-                                alt="BrokerIQ query builder"
+                                class="compare-img compare-after"
+                                src="images/work/brokeriq-acl-after.png"
+                                alt="BrokerIQ ACL — after redesign"
                             />
+                            <img
+                                class="compare-img compare-before"
+                                src="images/work/brokeriq-acl-before.png"
+                                alt="BrokerIQ ACL — before redesign"
+                            />
+                            <button
+                                type="button"
+                                class="compare-handle"
+                                aria-label="Drag to compare before and after"
+                                aria-valuemin="0"
+                                aria-valuemax="100"
+                                aria-valuenow="20"
+                                role="slider"
+                            >
+                                <span
+                                    class="compare-handle-line"
+                                    aria-hidden="true"
+                                ></span>
+                                <span
+                                    class="compare-handle-grip"
+                                    aria-hidden="true"
+                                >
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="18"
+                                        height="18"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        aria-hidden="true"
+                                    >
+                                        <path d="M7 7l-4 5l4 5" />
+                                        <path d="M17 7l4 5l-4 5" />
+                                    </svg>
+                                </span>
+                            </button>
+                            <span
+                                class="compare-label compare-label-before"
+                                aria-hidden="true"
+                                >Before</span
+                            >
+                            <span
+                                class="compare-label compare-label-after"
+                                aria-hidden="true"
+                                >After</span
+                            >
                         </figure>
                         <div class="work-content">
                             <div class="work-meta">
@@ -99,54 +198,23 @@
                                 <span class="work-date">2019</span>
                             </div>
                             <h1 class="work-title">
-                                Reducing complexity in data querying and
-                                filtering
+                                2,000+ permissions to ~200 user-facing groups,
+                                with zero changes to the data model
                             </h1>
                             <p class="work-body">
-                                Filters were tightly coupled to column
-                                visibility, making them unusable on data-heavy
-                                tables. The query builder had a related issue
-                                where unclear condition grouping was driving
-                                consistent Customer Success requests. I used
-                                observation and research to ground the redesign
-                                of both and worked with engineering to ship
-                                them. Requests related to querying dropped
-                                significantly within the first few months.
-                            </p>
-                        </div>
-                    </article>
-
-                    <article class="work-article">
-                        <figure class="work-cover">
-                            <img
-                                src="images/work/getyourguide-search.png"
-                                alt="GetYourGuide search results"
-                            />
-                        </figure>
-                        <div class="work-content">
-                            <div class="work-meta">
-                                <img
-                                    class="work-logo"
-                                    src="images/logos/getyourguide.png"
-                                    alt="GetYourGuide"
-                                />
-                                <span class="work-date">2022</span>
-                            </div>
-                            <h1 class="work-title">
-                                Discovery and search at a high-traffic B2C
-                                travel platform
-                            </h1>
-                            <p class="work-body">
-                                GetYourGuide attracts around 25 million monthly
-                                visitors. I worked on two projects shaping how
-                                they discover and search activities, using data
-                                analysis and user research to inform decisions
-                                alongside the wider team. The work improved the
-                                user journey and contributed to a positive
-                                impact on global conversion rate. It also
-                                deepened my understanding of consumer search
-                                behaviour and directly inspired a filter vision
-                                initiative I went on to drive.
+                                The CRM's permissions had grown into a structure
+                                only engineers could navigate, which made every
+                                customer access setup a ticket for CS staff.
+                                Because the backend couldn't change, I needed to
+                                find a different approach. In the data
+                                structure, the namespaces caught my attention.
+                                They were there for technical reasons, but might
+                                also work as a way to organise the permissions
+                                for users. Engineering confirmed it was viable,
+                                and we built the matrix on that structure.
+                                Non-technical admins could configure access
+                                independently, and CS effort on customer setup
+                                dropped meaningfully.
                             </p>
                         </div>
                     </article>
@@ -211,5 +279,6 @@
             </div>
         </main>
         <script src="link-hover.js"></script>
+        <script src="before-after.js"></script>
     </body>
 </html>
