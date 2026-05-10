@@ -16,13 +16,28 @@
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
         <link
-            href="https://fonts.googleapis.com/css2?family=Roboto+Serif:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:wght@400;700&display=swap"
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Roboto+Serif:ital,wght@0,100..900;1,100..900&family=JetBrains+Mono:wght@400;700&display=swap"
             rel="stylesheet"
         />
         <link rel="stylesheet" href="styles.css" />
+        <script>
+        (function () {
+            var d = document.createElement('div');
+            d.style.cssText = 'overflow:scroll;width:100px;height:100px;visibility:hidden;position:absolute;top:-9999px;';
+            document.documentElement.appendChild(d);
+            document.documentElement.style.setProperty('--sb-w', (d.offsetWidth - d.clientWidth) + 'px');
+            document.documentElement.removeChild(d);
+        })();
+        </script>
     </head>
     <body>
         <a href="#main-content" class="skip-link">Skip to main content</a>
+        <nav class="main-nav" aria-label="Main">
+            <ul>
+                <li><a href="index.html" aria-current="page">Home</a></li>
+                <li><a href="work.html">Work</a></li>
+            </ul>
+        </nav>
         <main id="main-content">
         <div class="container">
             <div class="left-section">
@@ -32,35 +47,70 @@
                 </h1>
 
                 <div class="name-title-section">
-                    <h2 class="name">Jovana Anđelković</h2>
+                    <div class="name-row">
+                        <h2 class="name">Jovana Anđelković</h2>
+                        <ul class="social-icons" aria-label="Social links">
+                            <li>
+                                <a href="https://github.com/jovana-andjelkovic" target="_blank" rel="noopener noreferrer" aria-label="GitHub (opens in new tab)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 19c-4.3 1.4 -4.3 -2.5 -6 -3m12 5v-3.5c0 -1 .1 -1.4 -.5 -2c2.8 -.3 5.5 -1.4 5.5 -6a4.6 4.6 0 0 0 -1.3 -3.2a4.2 4.2 0 0 0 -.1 -3.2s-1.1 -.3 -3.5 1.3a12.3 12.3 0 0 0 -6.2 0c-2.4 -1.6 -3.5 -1.3 -3.5 -1.3a4.2 4.2 0 0 0 -.1 3.2a4.6 4.6 0 0 0 -1.3 3.2c0 4.6 2.7 5.7 5.5 6c-.6 .6 -.6 1.2 -.5 2v3.5"/></svg>
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.linkedin.com/in/andelkovic-jovana/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn (opens in new tab)">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"/><path d="M8 11l0 5"/><path d="M8 8l0 .01"/><path d="M12 16l0 -5"/><path d="M16 16v-3a2 2 0 0 0 -4 0"/></svg>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
                     <p class="job-title">Senior Product Designer @ <a href="https://www.elastic.co/" target="_blank" rel="noopener noreferrer" aria-label="Elastic (opens in new tab)">Elastic</a></p>
                 </div>
 
                 <div class="info-columns">
                     <div class="info-column">
                         <span class="info-column-label">Previously</span>
-                        <ul class="info-column-list">
+                        <ul class="info-column-list info-column-list--inline">
                             <li><a href="https://www.getyourguide.com/" target="_blank" rel="noopener noreferrer">GetYourGuide</a></li>
                             <li><a href="https://oscilar.com/" target="_blank" rel="noopener noreferrer">Oscilar</a></li>
                             <li><a href="https://www.madetight.com/" target="_blank" rel="noopener noreferrer">Made Tight</a></li>
                             <li><a href="https://tradecore.com/" target="_blank" rel="noopener noreferrer">TradeCore</a></li>
                         </ul>
                     </div>
-                    <div class="info-column">
-                        <span class="info-column-label">Side projects</span>
-                        <ul class="info-column-list">
-                            <li><a href="https://github.com/jovana-andjelkovic/cardboard" target="_blank" rel="noopener noreferrer">CardBoard</a></li>
-                        </ul>
-                    </div>
-                    <div class="info-column">
-                        <span class="info-column-label">Find me @</span>
-                        <ul class="info-column-list">
-                            <li><a href="https://www.linkedin.com/in/andelkovic-jovana/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
-                            <li><a href="https://github.com/jovana-andjelkovic" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-                        </ul>
-                    </div>
                 </div>
             </div>
+
+            <aside class="right-section" aria-labelledby="latest-heading">
+                <span class="info-column-label" id="latest-heading">Recently shipped</span>
+                <ul class="latest-list">
+                    <li>
+                        <span class="latest-date">2026</span>
+                        <a href="https://www.elastic.co/search-labs/blog/kibana-query-activity-long-running-searches" target="_blank" rel="noopener noreferrer">Query activity in Kibana: a live control tower for long-running searches</a>
+                    </li>
+                    <li>
+                        <span class="latest-date">2026</span>
+                        <a href="https://www.elastic.co/platform/autoops" target="_blank" rel="noopener noreferrer">AutoOps: cluster management utility</a>
+                    </li>
+                    <li>
+                        <span class="latest-date">2026</span>
+                        <a href="https://www.elastic.co/search-labs/blog/cloud-connect-elastic-inference-service" target="_blank" rel="noopener noreferrer">Skip MLOps: managed cloud inference via Cloud Connect</a>
+                    </li>
+                    <li>
+                        <span class="latest-date">2025</span>
+                        <a href="https://www.elastic.co/search-labs/blog/elastic-autoops-self-managed-elasticsearch" target="_blank" rel="noopener noreferrer">AutoOps: simplifying self-managed Elasticsearch</a>
+                    </li>
+                    <li>
+                        <span class="latest-date">2025</span>
+                        <a href="https://www.elastic.co/blog/whats-new-elastic-platform-9-0-0" target="_blank" rel="noopener noreferrer">Data stream reindexing in Upgrade Assistant (Elastic 9.0)</a>
+                    </li>
+                </ul>
+                <a href="work.html" class="latest-cta">See more projects →</a>
+
+                <div class="info-column right-side-projects">
+                    <span class="info-column-label">Side projects</span>
+                    <ul class="info-column-list">
+                        <li><a href="https://github.com/jovana-andjelkovic/cardboard" target="_blank" rel="noopener noreferrer">CardBoard</a></li>
+                    </ul>
+                </div>
+            </aside>
         </div>
         </main>
 
@@ -412,11 +462,13 @@
           ctx.drawImage(obstacleSprite, o.type.srcX, o.type.srcY, o.type.srcW, o.type.srcH, Math.floor(o.x), Math.floor(obstacleY(o)), o.w, o.h);
         }
 
-        // Score
+        // Score — vertically centered with nav links
         ctx.textAlign = 'right';
         ctx.fillStyle = 'rgba(33,17,73,0.65)';
         ctx.font = '13px "JetBrains Mono", monospace';
-        ctx.fillText(score + ' m', vw - 16, 20);
+        ctx.textBaseline = 'middle';
+        ctx.fillText(score + ' m', vw - 80, 28);
+        ctx.textBaseline = 'alphabetic';
       }
 
       // ── Input handling ────────────────────────────────────
@@ -501,8 +553,9 @@
 
         function resizeGrid() {
           var vw = window.innerWidth, vh = window.innerHeight;
-          gW = gridCanvas.width  = Math.ceil(vw * 1.8);
-          gH = gridCanvas.height = Math.ceil(vh * 1.8);
+          var maxDim = Math.max(vw, vh);
+          gW = gridCanvas.width  = Math.ceil(maxDim * 1.8);
+          gH = gridCanvas.height = Math.ceil(maxDim * 1.8);
           gridCanvas.style.width  = gW + 'px';
           gridCanvas.style.height = gH + 'px';
           gridCanvas.style.left   = Math.round((vw - gW) / 2) + 'px';
@@ -703,61 +756,6 @@
         });
       })();
 
-      // ── CRT hover for links ───────────────────────────────────
-      (function () {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-        function rnd(min, max) { return min + Math.random() * (max - min); }
-        function dir() { return Math.random() < 0.5 ? -1 : 1; }
-        function rgbSplit(spread, a) {
-          return (-spread).toFixed(1) + 'px 1px rgba(255,30,80,' + a + '),' +
-                  spread.toFixed(1) + 'px -1px rgba(0,210,255,' + a + ')';
-        }
-
-        document.querySelectorAll('.info-column-list a, .job-title a').forEach(function (link) {
-          var ver = 0;
-
-          link.addEventListener('mouseenter', function () {
-            var v = ++ver;
-            var d = dir(), spread = rnd(1, 2);
-            var tx1 = d * rnd(1.5, 3), tx2 = -d * rnd(0.5, 1.5);
-
-            // Frame 1 — glitch in
-            link.style.transition  = 'none';
-            link.style.filter      = 'blur(0.5px) brightness(' + rnd(1.2, 1.4).toFixed(2) + ')';
-            link.style.transform   = 'translateX(' + tx1.toFixed(1) + 'px)';
-            link.style.textShadow  = rgbSplit(spread, 0.55);
-
-            setTimeout(function () {
-              if (ver !== v) return;
-              // Frame 2 — counter-glitch
-              link.style.filter     = 'blur(0.3px) brightness(1.1)';
-              link.style.transform  = 'translateX(' + tx2.toFixed(1) + 'px)';
-              link.style.textShadow = rgbSplit(spread * 0.5, 0.3);
-
-              setTimeout(function () {
-                if (ver !== v) return;
-                // Settle — dimmed hover state
-                link.style.transition  = 'filter 0.15s ease, transform 0.15s ease, text-shadow 0.15s ease, opacity 0.15s ease';
-                link.style.filter      = '';
-                link.style.transform   = '';
-                link.style.textShadow  = '';
-                link.style.opacity     = '0.5';
-              }, 60);
-            }, 60);
-          });
-
-          link.addEventListener('mouseleave', function () {
-            ver++;
-            link.style.transition  = 'none';
-            link.style.filter      = '';
-            link.style.transform   = '';
-            link.style.textShadow  = '';
-            link.style.opacity     = '';
-          });
-        });
-      })();
-
       // ── Character materialisation ─────────────────────────
       (function () {
         var el = document.getElementById('game-char');
@@ -879,5 +877,6 @@
       })();
 
     </script>
+    <script src="link-hover.js"></script>
     </body>
 </html>
