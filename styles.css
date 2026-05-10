@@ -601,13 +601,6 @@ img.work-logo[src*="tradecore"] {
     right: 12px;
 }
 
-.work-header {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    flex-wrap: wrap;
-}
-
 .work-title {
     font-size: clamp(20px, 1.8vw, 24px);
     font-weight: 500;
