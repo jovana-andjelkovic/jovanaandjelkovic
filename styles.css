@@ -404,23 +404,6 @@ body:not(.work-page):not(.has-sb) .main-nav {
     font-size: clamp(17px, 3.9vw, 39px);
 }
 
-.work-page-subtitle {
-    margin-top: 8px;
-    font-size: 16px;
-    color: rgba(33,17,73,0.5);
-}
-
-.work-page-subtitle a {
-    color: rgb(109 121 202 / 85%);
-    text-decoration: none;
-}
-
-.work-page-subtitle a:hover {
-    text-decoration: underline;
-    text-underline-offset: 3px;
-    text-decoration-thickness: 1px;
-}
-
 .work-article {
     display: flex;
     flex-direction: column;
