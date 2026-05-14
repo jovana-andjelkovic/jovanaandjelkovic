@@ -32,7 +32,6 @@
 }
 
 html {
-    overscroll-behavior-y: none;
     background:
         radial-gradient(circle at 83.9% 92.8%, rgba(184,164,200,0.21) 0%, transparent 36%),
         radial-gradient(circle at 88.7% 63.8%, rgba(196,208,192,0.22) 0%, transparent 45%),
@@ -44,7 +43,12 @@ html {
         radial-gradient(circle at 44.5% 63.7%, rgba(196,208,192,0.22) 0%, transparent 37%),
         radial-gradient(circle at 61.3% 84.2%, rgba(196,208,192,0.24) 0%, transparent 32%),
         #EAE7F2;
-    background-attachment: fixed;
+}
+
+@media (min-width: 1025px) and (hover: hover) {
+    html {
+        background-attachment: fixed;
+    }
 }
 
 
